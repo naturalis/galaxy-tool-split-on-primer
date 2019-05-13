@@ -5,8 +5,8 @@ SCRIPTDIR=$(dirname "$(readlink -f "$0")")
 if [ "$4" == "text" ]
 then
 	# Create a temporary file for the user provided primers
-	#temp_primer=$(mktemp /media/GalaxyData/database/files/)
-	temp_primer=$(mktemp /home/galaxy/galaxy/database/XXXXXX)
+	temp_primer=$(mktemp /media/GalaxyData/database/files/XXXXXX)
+	#temp_primer=$(mktemp /home/galaxy/galaxy/database/XXXXXX)
 
 	# Split the text field data and write them to the temp file
 	printf $(echo "$5" | sed 's/__cn__/\\n/g') > $temp_primer
@@ -19,8 +19,8 @@ fi
 if [ "$1" == "zip" ]
 then
 	# Create a temporary zip file
-	#temp_zip=$(mktemp -u /media/GalaxyData/database/files/XXXXXX.zip)
-	temp_zip=$(mktemp -u /home/galaxy/galaxy/database/XXXXXX.zip)
+	temp_zip=$(mktemp -u /media/GalaxyData/database/files/XXXXXX.zip)
+	#temp_zip=$(mktemp -u /home/galaxy/galaxy/database/XXXXXX.zip)
 	IFS=$'\t\n'
 
 	# for each file in the zip
@@ -32,8 +32,8 @@ then
 			IFS=$' \t\n'
 
 			# Create a temporary seq fiel
-			#ziped=$(mktemp /media/GalaxyData/database/files/)
-			ziped=$(mktemp /home/galaxy/galaxy/database/XXXXXX)
+			ziped=$(mktemp /media/GalaxyData/database/files/XXXXXX)
+			#ziped=$(mktemp /home/galaxy/galaxy/database/XXXXXX)
 
 			# Write the reads to the temp seq file
 			unzip -p "$2" "$file" > $ziped
@@ -44,7 +44,7 @@ then
 
 			# Skip the folder structure in the zip if present.
 			# Run the Split on primer tool, capture the file list output
-			Split_files=$(python $SCRIPTDIR"/Split_on_Primer" -f $ziped -p "$5" -m "$6" -s "$7" ${8})
+			Split_files=$(python $SCRIPTDIR"/Split_on_Primer.py" -f $ziped -p "$5" -m "$6" -s "$7" ${8})
 
 			# for each filename in the filelist produced by the Split_on_Primer tool
 			for split in $Split_files
@@ -70,13 +70,13 @@ then
 		fi
 	done
 	# move the temp zip to the output zip location so that galaxy can find it
-	echo $temp_zip $9
+	#echo $temp_zip $9
 	mv $temp_zip $9
 
 # if non-zipped data is suplied
 else
 	# Run the Split tools and capture the split filepaths
-	Split_files=$(python $SCRIPTDIR"/Split_on_Primer" -f "$2" -p "$5" -m "$6" -s "$7" ${8})
+	Split_files=$(python $SCRIPTDIR"/Split_on_Primer.py" -f "$2" -p "$5" -m "$6" -s "$7" ${8})
 
 	# for each split file produced
 	for file in $Split_files
