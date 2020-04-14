@@ -14,7 +14,7 @@
 # contact: youri.lammers@naturalis.nl / youri.lammers@gmail.com
 
 # import the modules used by the script
-import os, argparse, itertools, sys, multiprocessing, csv
+import os, argparse, itertools, sys, multiprocessing, csv, codecs
 
 # Retrieve the commandline arguments
 parser = argparse.ArgumentParser(description = 'Split a sequence file based on a list of primers.')
@@ -47,14 +47,15 @@ def extract_sequences():
 	sequence_file.seek(0)
 
 	# create a iterative index of all the headers
-        lines = (x[1] for x in itertools.groupby(sequence_file, key=lambda line: line[0] == file_format))
+	lines = (x[1] for x in itertools.groupby(sequence_file, key=lambda line: line[0] == file_format))
 
 	# walk through the header and obtain the sequences (and quality score if applicable)
-        for headers in lines:
-		header = headers.next().strip()
-		if file_format == '>': sequence = [''.join(line.strip() for line in lines.next()).upper()]
+	for headers in lines:
+#		header = headers.next().strip()
+		header = next(headers).strip()
+		if file_format == '>': sequence = [''.join(line.strip() for line in next(lines)).upper()]
 		else:
-			temporary_list, sequence, quality = [line.strip() for line in lines.next()], [], []
+			temporary_list, sequence, quality = [line.strip() for line in next(lines)], [], []
 		
 			# get the multi line sequences and break at the sequence - quality
 			# seperator symbol (+)
@@ -72,7 +73,7 @@ def extract_sequences():
 				if len(quality) == 0 and len(sequence) == 1:
 					quality.append(headers.next().strip())
 				else:
-					quality += [line.strip() for line in lines.next()]
+					quality += [line.strip() for line in next(lines)]
 			
 			# join the sequence lines and quality lines together
 			sequence = [''.join(sequence).upper(), ''.join(quality)]
@@ -96,7 +97,7 @@ def extract_primers():
 	#directory = os.path.dirname(os.path.realpath(args.sequence)) + '/'
 	#directory = os.path.splitext(args.sequence)[0] + '-'
 	directory = os.path.dirname(os.path.realpath(args.sequence)) + '/'
-        base = os.path.splitext(os.path.basename(args.sequence))[0]
+	base = os.path.splitext(os.path.basename(args.sequence))[0]
 	extension = os.path.splitext(args.sequence)[1]
 	directory = directory + base.replace('_','-') + '-'
 
@@ -104,7 +105,8 @@ def extract_primers():
 	if args.delimiter == 'tab': args.delimiter = '\t'
 
 	# walk through the primers in the primer file
-	primer_file = csv.reader(open(args.primer), delimiter=args.delimiter.decode('string_escape'))
+#	primer_file = csv.reader(open(args.primer), delimiter=args.delimiter.decode('string_escape'))
+	primer_file = csv.reader(open(args.primer), delimiter=bytes(args.delimiter, "utf-8").decode('unicode_escape'))
 	for line in primer_file:
 
 		# skipp comment lines in primer file
@@ -116,7 +118,7 @@ def extract_primers():
 		# open the output_file
 		output_file = open(directory+line[0]+extension,'w')
 		if line[0] not in file_dictionary:
-			print '{0}{1}{2}'.format(directory, line[0], extension)
+			print('{0}{1}{2}'.format(directory, line[0], extension))
 		
 		# if the --shift argument > 0, create different primer
 		# variants with the sequence shifts needed
@@ -129,7 +131,7 @@ def extract_primers():
 
 	# create the unsorted file
 	file_dictionary['unsorted'] = open(directory+'unsorted'+extension,'w')
-	print '{0}{1}{2}'.format(directory, 'unsorted', extension)
+	print('{0}{1}{2}'.format(directory, 'unsorted', extension))
 
 	# return the primer dictionary
 	return [primer_list, file_dictionary]
@@ -171,7 +173,7 @@ def levenshtein_distance(sequence, primer):
 	# was larger than the maximum mismatch and the --mis argument is
 	# greater than 0 (default)
 
-	previous = xrange(len(sequence) + 1)
+	previous = range(len(sequence) + 1)
 	for pos_seq, nuc_seq in enumerate(sequence):
 		current = [pos_seq + 1]
 		for pos_prim, prim_seq in enumerate(primer):
@@ -227,7 +229,7 @@ def compare_sequences(sequence, primer_list, read_shift, method, distance_result
 	return distance_results
 
 
-def find_best_primer((read, primer_list, size)):
+def find_best_primer(xxx_todo_changeme):
 
 	# worker thread for the distance calculations
 	# this function will calculate the distance
@@ -235,6 +237,7 @@ def find_best_primer((read, primer_list, size)):
 	# hamming or levenhstein method
 
 	# list with the distance results
+	(read, primer_list, size) = xxx_todo_changeme
 	distance_results = []
 
 	# if the sequence is too short, return the read as unsorted

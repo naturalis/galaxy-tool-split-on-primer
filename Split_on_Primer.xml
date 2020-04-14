@@ -2,7 +2,7 @@
 <tool id="Split_on_Primer" name="Split on primer" version="1.1" force_history_refresh="True">
 	<!--description>Demultiplex a sequence file based on the used primers.</description-->
 	<requirements>
-        <requirement type="package" version="2.7">python</requirement>
+        <requirement type="package" version="3.8.2">python</requirement>
 	</requirements>
 	<!-- collect the parameters and provide these to the wrapper script -->
 	<command>
