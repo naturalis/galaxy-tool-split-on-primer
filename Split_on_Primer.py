@@ -11,7 +11,6 @@
 # Arguments: Split_on_Primer.py -s [sequence file] -p [primer file] -r -m [mismatched nucleotides allowed] -c [number of threads]
 
 # author: Youri Lammers
-# contact: youri.lammers@naturalis.nl / youri.lammers@gmail.com
 
 # import the modules used by the script
 import os, argparse, itertools, sys, multiprocessing, csv, codecs
