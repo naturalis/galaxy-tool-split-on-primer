@@ -1,12 +1,21 @@
 #!/bin/bash
+
 SCRIPTDIR=$(dirname "$(readlink -f "$0")")
+
+# sanity check
+printf "Conda env: $CONDA_DEFAULT_ENV\n"
+printf "Python version: $(python --version |  awk '{print $2}')\n"
+printf "Unzip version: $(unzip -v | head -n1 | awk '{print $2}')\n"
+printf "Bash version: ${BASH_VERSION}\n"
+printf "SCRIPTDIR: $SCRIPTDIR\n\n"
+
 # If the user entered the primers in the text form, save them to a temporary file
 # (Required for the Split_on_primer script)
 if [ "$4" == "text" ]
 then
 	# Create a temporary file for the user provided primers
-	temp_primer=$(mktemp /media/GalaxyData/database/files/XXXXXX)
-	#temp_primer=$(mktemp /home/galaxy/galaxy/database/XXXXXX)
+	temp_primer=$(mktemp /data/files/XXXXXX)
+
 
 	# Split the text field data and write them to the temp file
 	printf $(echo "$5" | sed 's/__cn__/\\n/g') > $temp_primer
@@ -19,8 +28,7 @@ fi
 if [ "$1" == "zip" ]
 then
 	# Create a temporary zip file
-	temp_zip=$(mktemp -u /media/GalaxyData/database/files/XXXXXX.zip)
-	#temp_zip=$(mktemp -u /home/galaxy/galaxy/database/XXXXXX.zip)
+	temp_zip=$(mktemp -u /data/files/XXXXXX.zip)
 	IFS=$'\t\n'
 
 	# for each file in the zip
@@ -32,8 +40,7 @@ then
 			IFS=$' \t\n'
 
 			# Create a temporary seq fiel
-			ziped=$(mktemp /media/GalaxyData/database/files/XXXXXX)
-			#ziped=$(mktemp /home/galaxy/galaxy/database/XXXXXX)
+			ziped=$(mktemp /data/files/XXXXXX)
 
 			# Write the reads to the temp seq file
 			unzip -p "$2" "$file" > $ziped
